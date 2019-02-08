@@ -68,21 +68,23 @@ class ProcessCommentMentions implements ShouldQueue
 
         $command_types = CommandType::all()->pluck('command');
 
-        Comment::where('processed', false)->chunk(50, function($comments) use ($command_types){
+        Comment::where('processed', 'false')->chunkById(100, function($comments) use ($command_types){
 
             foreach ($comments as $comment) {
                 $parsed_commands = $this->parseCommands($comment->body);
                 $commands = $parsed_commands[1];
                 $arguments = $parsed_commands[2];
-                $found_commands = $this->matchCommands($commands, $command_types);
-                $this->insertCommands($comment->id, $found_commands, $arguments);
+                $matched_commands = $this->matchCommands($commands, $command_types);
+                $this->insertCommands($comment->id, $matched_commands, $arguments);
+                // mark comment
+                $comment->processed = true;
+                $comment->save();
             }
-
         });
     }
 
     public function queueCommands(){
-
+        //$commands = Command::
     }
 
     /**

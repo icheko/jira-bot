@@ -18,6 +18,7 @@ class CreateCommandsTable extends Migration
             $table->uuid('comment_id');
             $table->uuid('command_type_id');
             $table->string('arguments')->nullable(true);
+            $table->boolean('processed')->default(false);
             $table->timestamps();
             $table->primary('id');
             $table->foreign('comment_id')->references('id')->on('comments');
