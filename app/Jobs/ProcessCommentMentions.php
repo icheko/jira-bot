@@ -42,6 +42,7 @@ class ProcessCommentMentions implements ShouldQueue
         $this->api = $api;
         $this->loadComments();
         $this->processComments();
+        $this->queueCommands();
     }
 
     /**
@@ -71,11 +72,17 @@ class ProcessCommentMentions implements ShouldQueue
 
             foreach ($comments as $comment) {
                 $parsed_commands = $this->parseCommands($comment->body);
-                $found_commands = $this->matchCommands($parsed_commands[1], $command_types);
-                $this->insertCommands($comment->id, $found_commands);
+                $commands = $parsed_commands[1];
+                $arguments = $parsed_commands[2];
+                $found_commands = $this->matchCommands($commands, $command_types);
+                $this->insertCommands($comment->id, $found_commands, $arguments);
             }
 
         });
+    }
+
+    public function queueCommands(){
+
     }
 
     /**
@@ -108,12 +115,16 @@ class ProcessCommentMentions implements ShouldQueue
      * @param $comment_id
      * @param $commands
      */
-    public function insertCommands($comment_id, $commands){
-        foreach ($commands as $command){
-            Command::updateOrCreate([
+    public function insertCommands($comment_id, $commands, $arguments){
+        foreach ($commands as $key => $command){
+            $commandModel = Command::updateOrCreate([
                 'comment_id' => $comment_id,
                 'command_type_id' => CommandType::where('command', $command)->firstOrFail()->id,
             ]);
+            if($arguments[$key]){
+                $commandModel->arguments = $arguments[$key];
+                $commandModel->save();
+            }
         }
     }
 
@@ -122,8 +133,8 @@ class ProcessCommentMentions implements ShouldQueue
      *
      * @return array
      */
-    function parseCommands($string){
-        preg_match_all("/\/([\w-]+)/", $string, $matches);
+    function parseCommands($comment_body){
+        preg_match_all("/\/([\w-]+):?(\w+)?/", $comment_body, $matches);
         return $matches;
     }
 
@@ -135,7 +146,7 @@ class ProcessCommentMentions implements ShouldQueue
      */
     function matchCommands($parsed_cmds, $command_types){
         $parsed_cmds = collect($parsed_cmds);
-        $intersect = $command_types->intersect($parsed_cmds);
-        return $intersect->values()->toArray();
+        $intersect = $parsed_cmds->intersect($command_types);
+        return $intersect->toArray();
     }
 }
