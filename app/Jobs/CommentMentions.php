@@ -52,7 +52,6 @@ class CommentMentions implements ShouldQueue
                 ]);
             }
 
-
         }
     }
 }

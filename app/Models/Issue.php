@@ -17,4 +17,8 @@ class Issue extends Model
     protected $fillable = [
         'jira_id', 'jira_key',
     ];
+
+    public function comments(){
+        return $this->hasMany(Comment::class);
+    }
 }
