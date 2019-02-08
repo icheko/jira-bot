@@ -66,9 +66,9 @@ class ProcessCommentMentions implements ShouldQueue
      */
     public function processComments(){
 
-        $command_types = CommandType::all()->pluck('command');
+        $command_types = CommandType::all()->pluck('command_name');
 
-        Comment::where('processed', 'false')->chunkById(100, function($comments) use ($command_types){
+        Comment::where('processed', 'false')->chunkById(50, function($comments) use ($command_types){
 
             foreach ($comments as $comment) {
                 $parsed_commands = $this->parseCommands($comment->body);
@@ -83,8 +83,17 @@ class ProcessCommentMentions implements ShouldQueue
         });
     }
 
+    /**
+     * Queue up jobs to perform the commands
+     */
     public function queueCommands(){
-        //$commands = Command::
+        Command::where('processed', 'false')->chunkById(50, function($commands) {
+
+            foreach ($commands as $command) {
+                echo $command_name = $command->commandType->command_name;
+            }
+
+        });
     }
 
     /**
@@ -121,7 +130,7 @@ class ProcessCommentMentions implements ShouldQueue
         foreach ($commands as $key => $command){
             $commandModel = Command::updateOrCreate([
                 'comment_id' => $comment_id,
-                'command_type_id' => CommandType::where('command', $command)->firstOrFail()->id,
+                'command_type_id' => CommandType::where('command_name', $command)->firstOrFail()->id,
             ]);
             if($arguments[$key]){
                 $commandModel->arguments = $arguments[$key];

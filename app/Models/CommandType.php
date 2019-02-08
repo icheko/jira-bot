@@ -15,6 +15,10 @@ class CommandType extends Model
      * @var array
      */
     protected $fillable = [
-        '',
+        'command_name', 'alias',
     ];
+
+    public function command(){
+        return $this->hasMany(Command::class);
+    }
 }

@@ -15,7 +15,7 @@ class CreateCommandTypesTable extends Migration
     {
         Schema::create('command_types', function (Blueprint $table) {
             $table->uuid('id');
-            $table->string('command');
+            $table->string('command_name');
             $table->string('alias')->nullable(true);
             $table->timestamps();
             $table->primary('id');

@@ -17,4 +17,8 @@ class Command extends Model
     protected $fillable = [
         'comment_id', 'command_type_id', 'arguments',
     ];
+
+    public function commandType(){
+        return $this->belongsTo(CommandType::class);
+    }
 }
