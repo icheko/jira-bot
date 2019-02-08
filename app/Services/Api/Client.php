@@ -3,6 +3,7 @@
 namespace App\Services\Api;
 
 use GuzzleHttp\Client as GuzzleClient;
+use \Log;
 
 class Client
 {
@@ -18,7 +19,7 @@ class Client
      *
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function __construct(GuzzleClient $client, $url, $username, $password) {
+    public function __construct($url, $username, $password) {
 
         $this->client = new GuzzleClient([
                            // Base URI is used with relative requests
@@ -27,7 +28,25 @@ class Client
                                $username,
                                $password
                            ],
+                           'headers' => [
+                               'Accept' => 'application/json',
+                               'Content-Type' => 'application/json'
+                           ],
                        ]);
+    }
+
+    /**
+     * @param $text
+     */
+    public function log($class, $text){
+        Log::info("[{$class}]: {$text}");
+    }
+
+    /**
+     * @param $text
+     */
+    public function error($class, $text){
+        Log::error("[{$class}]: {$text}");
     }
 
     /**

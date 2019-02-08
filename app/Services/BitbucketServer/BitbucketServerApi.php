@@ -26,7 +26,7 @@ class BitbucketServerApi
      */
     public function __construct(GuzzleClient $guzzleClient) {
         $this->client = new Client(
-            $guzzleClient, config('bot.bitbucket-server.api_baseurl'), config('bot.bitbucket-server.auth_username'), config('bot.bitbucket-server.auth_password')
+            config('bot.bitbucket-server.api_baseurl'), config('bot.bitbucket-server.auth_username'), config('bot.bitbucket-server.auth_password')
         );
 
         $this->botName = config('bot.bitbucket-server.username');

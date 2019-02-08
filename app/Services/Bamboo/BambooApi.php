@@ -27,7 +27,7 @@ class BambooApi
      */
     public function __construct(GuzzleClient $guzzleClient) {
         $this->client = new Client(
-            $guzzleClient, config('bot.bamboo.api_baseurl'), config('bot.bamboo.auth_username'), config('bot.bamboo.auth_password')
+            config('bot.bamboo.api_baseurl'), config('bot.bamboo.auth_username'), config('bot.bamboo.auth_password')
         );
 
         $this->botName = config('bot.bamboo.username');
@@ -36,14 +36,16 @@ class BambooApi
     public function createPlanBranch($branch){
         $branch_friendly = preg_replace("/\//", '-', $branch);
         $this->log("Creating plan branch [{$branch_friendly}] in Bamboo");
+        $response = null;
 
-        $response = $this->client->request('PUT', "plan/POR-POUI/branch/{$branch_friendly}?vcsBranch={$branch}&enabled=true&cleanupEnabled=true");
-
-        if($response->getStatusCode() != 200){
-            // log exception
+        try{
+            $response = $this->client->request('PUT', "plan/POR-POUI/branch/{$branch_friendly}?vcsBranch={$branch}&enabled=true&cleanupEnabled=true");
+        } catch(\Exception $e){
+            $this->error($e->getMessage());
+            return null;
         }
 
-        return json_decode($response->getBody());
+        return json_decode($response->getBody()->getContents());
     }
 
     /**
@@ -51,5 +53,12 @@ class BambooApi
      */
     private function log($text){
         Log::info("[BambooApi]: {$text}");
+    }
+
+    /**
+     * @param $text
+     */
+    private function error($text){
+        Log::error("[BambooApi]: {$text}");
     }
 }
