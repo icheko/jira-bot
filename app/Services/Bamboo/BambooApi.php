@@ -33,6 +33,13 @@ class BambooApi
         $this->botName = config('bot.bamboo.username');
     }
 
+    /**
+     * Create a plan branch
+     * @param $branch
+     *
+     * @return array|mixed|object
+     * @throws \Exception
+     */
     public function createPlanBranch($branch){
         $branch_friendly = preg_replace("/\//", '-', $branch);
         $this->log("Creating plan branch [{$branch_friendly}] in Bamboo");
@@ -41,8 +48,8 @@ class BambooApi
         try{
             $response = $this->client->request('PUT', "plan/POR-POUI/branch/{$branch_friendly}?vcsBranch={$branch}&enabled=true&cleanupEnabled=true");
         } catch(\Exception $e){
-            $this->error($e->getMessage());
-            return null;
+            $this->client->error(get_class($this), $e->getMessage());
+            throw $e;
         }
 
         return json_decode($response->getBody()->getContents());

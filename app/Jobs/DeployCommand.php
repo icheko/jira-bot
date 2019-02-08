@@ -47,14 +47,12 @@ class DeployCommand implements ShouldQueue
             return;
         }
 
-        // add jira comment if no branches
         // add jira comment if multiple branches
 
         $branch_name = $branches->values[0]->displayId;
         $result = $bambooApi->createPlanBranch($branch_name);
 
         if($result){
-            $bamboo_link = $result->link->href;
             $jiraApi->leaveComment($this->jira_key, "Woof. I have triggered the build job.");
         }
     }

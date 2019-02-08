@@ -53,6 +53,7 @@ class JiraApi
      * @param $comment
      *
      * @return array|mixed|object
+     * @throws \Exception
      */
     public function leaveComment($jira_key, $comment){
 
@@ -64,7 +65,7 @@ class JiraApi
             ]);
         }catch(\Exception $e){
             $this->client->error(get_class($this), $e->getMessage());
-            return null;
+            throw $e;
         }
 
         return json_decode($response->getBody());
