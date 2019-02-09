@@ -85,11 +85,14 @@ class BambooApi
         return json_decode($response->getBody()->getContents());
     }
 
-    public function triggerPlanBuild($branch){
+    public function triggerPlanBuild($branch, $skip_tests){
         $response = null;
 
+        if($skip_tests)
+            $skip_tests = '&bamboo.variable.skipTests=true';
+
         try{
-            $response = $this->client->request('POST', "queue/{$branch}?stage&executeAllStages");
+            $response = $this->client->request('POST', "queue/{$branch}?stage&executeAllStages{$skip_tests}");
         } catch(\Exception $e){
             $this->client->error(get_class($this), $e->getMessage());
             throw $e;

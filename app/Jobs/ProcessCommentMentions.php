@@ -98,7 +98,7 @@ class ProcessCommentMentions implements ShouldQueue
                     throw new \Exception("Command [{$command_name}] is not supported.");
                 }
 
-                $command_class::dispatch($command->arguments, $command->comment->issue->jira_key);
+                $command_class::dispatch($command->id, $command->arguments, $command->comment->issue->jira_key);
 
                 // mark processed
                 $command->processed = true;
@@ -158,7 +158,7 @@ class ProcessCommentMentions implements ShouldQueue
      * @return array
      */
     function parseCommands($comment_body){
-        preg_match_all("/\/([\w-]+):?(\w+)?/", $comment_body, $matches);
+        preg_match_all("/\/([\w-]+):?([\w-]+)?/", $comment_body, $matches);
         return $matches;
     }
 

@@ -13,12 +13,11 @@ class CommandTypesSeeder extends Seeder
     public function run()
     {
         CommandType::updateOrCreate([
-            'command_name' => 'skip-tests',
-            'alias' => 'st',
+            'command_name' => 'deploy',
         ]);
 
         CommandType::updateOrCreate([
-            'command_name' => 'deploy',
+            'command_name' => 'build',
         ]);
     }
 }
