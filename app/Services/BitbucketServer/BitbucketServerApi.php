@@ -35,9 +35,9 @@ class BitbucketServerApi
     /**
      * @return mixed
      */
-    public function getBranches($filter){
+    public function getBranches($bitbucket_repo, $filter){
 
-        $response = $this->client->request('GET', "projects/STARS20/repos/master/branches?filterText={$filter}");
+        $response = $this->client->request('GET', "projects/{$bitbucket_repo}/branches?filterText={$filter}");
 
         if($response->getStatusCode() != 200){
             // log exception

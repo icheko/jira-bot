@@ -74,14 +74,18 @@ class ProcessCommentMentions implements ShouldQueue
         Comment::where('processed', 'false')->chunkById(50, function($comments) use ($command_types){
 
             foreach ($comments as $comment) {
+
+                if($comment->issue->project->jira_key == 'UNK'){
+                    $this->markProcessed($comment);
+                    return;
+                }
+
                 $parsed_commands = $this->parseCommands($comment->body);
                 $commands = $parsed_commands[1];
                 $arguments = $parsed_commands[2];
                 $matched_commands = $this->matchCommands($commands, $command_types);
                 $this->insertCommands($comment->id, $matched_commands, $arguments);
-                // mark processed
-                $comment->processed = true;
-                $comment->save();
+                $this->markProcessed($comment);
             }
         });
     }
@@ -101,7 +105,7 @@ class ProcessCommentMentions implements ShouldQueue
                     throw new Exception("Command [{$command_name}] is not supported.");
                 }
 
-                $command_class::dispatch($command->id, $command->arguments, $command->comment->issue->jira_key);
+                $command_class::dispatch($command, $command->arguments);
 
                 // mark processed
                 $command->processed = true;
@@ -110,6 +114,15 @@ class ProcessCommentMentions implements ShouldQueue
             }
 
         });
+    }
+
+    /**
+     * @param $model
+     */
+    private function markProcessed($model){
+        $model->processed = true;
+        $model->save();
+        $this->log("{$model->getTable()} with id [{$model->id}] marked processed");
     }
 
     /**

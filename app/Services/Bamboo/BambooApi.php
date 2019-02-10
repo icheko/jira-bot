@@ -44,18 +44,19 @@ class BambooApi
 
     /**
      * Create a plan branch
+     * @param $bamboo_key
      * @param $branch
      *
      * @return array|mixed|object
      * @throws \Exception
      */
-    public function createPlanBranch($branch){
+    public function createPlanBranch($bamboo_key, $branch){
         $branch_friendly = $this->cleanBranchName($branch);
         $this->log("Creating plan branch [{$branch_friendly}] in Bamboo");
         $response = null;
 
         try{
-            $response = $this->client->request('PUT', "plan/POR-POUI/branch/{$branch_friendly}?vcsBranch={$branch}&enabled=true&cleanupEnabled=true");
+            $response = $this->client->request('PUT', "plan/{$bamboo_key}/branch/{$branch_friendly}?vcsBranch={$branch}&enabled=true&cleanupEnabled=true");
         } catch(\Exception $e){
             $this->client->error(get_class($this), $e->getMessage());
             throw $e;
@@ -66,17 +67,18 @@ class BambooApi
 
     /**
      * Check if a plan branch exists for a branch in source control
+     * @param $bamboo_key
      * @param $branch
      *
      * @return bool
      * @throws \Exception
      */
-    public function planBranchExists($branch){
+    public function planBranchExists($bamboo_key, $branch){
         $branch_friendly = $this->cleanBranchName($branch);
         $response = null;
 
         try{
-            $response = $this->client->request('GET', "search/branches?masterPlanKey=POR-POUI&includeMasterBranch=true&searchTerm={$branch_friendly}");
+            $response = $this->client->request('GET', "search/branches?masterPlanKey={$bamboo_key}&includeMasterBranch=true&searchTerm={$branch_friendly}");
         } catch(\Exception $e){
             $this->client->error(get_class($this), $e->getMessage());
             throw $e;
@@ -85,6 +87,13 @@ class BambooApi
         return json_decode($response->getBody()->getContents());
     }
 
+    /**
+     * @param $branch
+     * @param $skip_tests
+     *
+     * @return array|mixed|object
+     * @throws \Exception
+     */
     public function triggerPlanBuild($branch, $skip_tests){
         $response = null;
 
