@@ -76,6 +76,7 @@ class ProcessCommentMentions implements ShouldQueue
             foreach ($comments as $comment) {
 
                 if($comment->issue->project->jira_key == 'UNK'){
+                    $this->log("Comment [{$comment->id}] project is not setup - skip.");
                     $this->markProcessed($comment);
                     return;
                 }
@@ -122,7 +123,8 @@ class ProcessCommentMentions implements ShouldQueue
     private function markProcessed($model){
         $model->processed = true;
         $model->save();
-        $this->log("{$model->getTable()} with id [{$model->id}] marked processed");
+        $class = ucfirst($model->getTable());
+        $this->log("[{$class}] with id [{$model->id}] marked processed");
     }
 
     /**
