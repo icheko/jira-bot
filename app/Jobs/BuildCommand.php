@@ -84,7 +84,7 @@ class BuildCommand implements ShouldQueue
 
         // add jira comment if multiple branches
 
-        if($foundBranches->size == 1){
+        if($foundBranches->size >= 1){
             $this->log("Plan branch exists. Triggering the build.");
 
             $bambooApi->triggerPlanBuild($foundBranches->searchResults[0]->id, $this->flag == 'skip-tests');
