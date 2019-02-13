@@ -107,11 +107,7 @@ class ProcessCommentMentions implements ShouldQueue
                 }
 
                 $command_class::dispatch($command, $command->arguments);
-
-                // mark processed
-                $command->processed = true;
-                $command->save();
-                //call_user_func($command_class.'::dispatch', [$command->arguments]);
+                $this->markProcessed($command);
             }
 
         });
