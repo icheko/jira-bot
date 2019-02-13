@@ -8,6 +8,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Services\Jira\JiraApi;
+use App\Models\Issue;
+use App\Models\Comment;
 
 class CommentMentions implements ShouldQueue
 {
@@ -30,7 +32,25 @@ class CommentMentions implements ShouldQueue
      */
     public function handle(JiraApi $api)
     {
-        $comments = $api->getCommentMentions();
+        $results = $api->getCommentMentions();
 
+        foreach ($results->issues as $issue){
+
+            $issueModel = Issue::updateOrCreate([
+                        'issue_id' => $issue->id,
+                        'issue_key' => $issue->key
+                     ]);
+
+            $comments = $issue->fields->comment->comments;
+
+            foreach ($comments as $comment){
+
+                $commentModel = Comment::updateOrCreate([
+                                   'issue_id' => $issueModel->id,
+                                   'comment_id' => $comment->id,
+                                   'body' => $comment->body,
+                                ]);
+            }
+        }
     }
 }

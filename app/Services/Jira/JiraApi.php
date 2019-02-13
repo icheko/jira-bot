@@ -37,12 +37,12 @@ class JiraApi
      */
     public function getCommentMentions(){
 
-        $res = $this->client->request('GET', "search?jql=(text%20~%20{$this->botName})%20AND%20updatedDate%20>%3D%20-7d%20ORDER%20BY%20updated%20DESC&fields=comment");
+        $response = $this->client->request('GET', "search?jql=(text%20~%20{$this->botName})%20AND%20updatedDate%20>%3D%20-7d%20ORDER%20BY%20updated%20DESC&fields=comment");
 
-        if($res->getStatusCode() != 200){
+        if($response->getStatusCode() != 200){
             // log exception
         }
 
-        return $res;
+        return json_decode($response->getBody());
     }
 }
