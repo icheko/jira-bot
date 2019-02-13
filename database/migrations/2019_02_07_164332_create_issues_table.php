@@ -14,10 +14,11 @@ class CreateIssuesTable extends Migration
     public function up()
     {
         Schema::create('issues', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('issue_id');
-            $table->string('issue_key');
+            $table->uuid('id');
+            $table->integer('jira_id');
+            $table->string('jira_key');
             $table->timestamps();
+            $table->primary('id');
         });
     }
 

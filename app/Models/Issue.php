@@ -3,15 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Uuids;
 
 class Issue extends Model
 {
+    use Uuids;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'issue_id', 'issue_key',
+        'jira_id', 'jira_key',
     ];
 }

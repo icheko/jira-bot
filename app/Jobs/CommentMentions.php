@@ -37,20 +37,22 @@ class CommentMentions implements ShouldQueue
         foreach ($results->issues as $issue){
 
             $issueModel = Issue::updateOrCreate([
-                        'issue_id' => $issue->id,
-                        'issue_key' => $issue->key
-                     ]);
+                      'jira_id' => $issue->id,
+                      'jira_key' => $issue->key
+                    ]);
 
             $comments = $issue->fields->comment->comments;
 
             foreach ($comments as $comment){
 
-                $commentModel = Comment::updateOrCreate([
-                                   'issue_id' => $issueModel->id,
-                                   'comment_id' => $comment->id,
-                                   'body' => $comment->body,
-                                ]);
+                Comment::updateOrCreate([
+                    'issue_id' => $issueModel->id,
+                    'jira_comment_id' => $comment->id,
+                    'body' => $comment->body,
+                ]);
             }
+
+
         }
     }
 }
