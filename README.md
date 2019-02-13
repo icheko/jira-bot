@@ -1,6 +1,7 @@
 # jira-bot
 Inspired by K8s bot https://github.com/k8s-ci-robot. Jira Bot listens for slash commands in comments to trigger bamboo builds, deployments, and manage source in bitbucket.
 
+![alt text](screenshots/jira.png)
 
 ## Command Structure
 @bot /command:param=value,param2=value
