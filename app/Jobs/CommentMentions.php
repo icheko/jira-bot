@@ -7,7 +7,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Services\Api\Client;
+use App\Services\Jira\JiraApi;
 
 class CommentMentions implements ShouldQueue
 {
@@ -28,8 +28,9 @@ class CommentMentions implements ShouldQueue
      *
      * @return void
      */
-    public function handle(Client $client)
+    public function handle(JiraApi $api)
     {
-        //
+        $comments = $api->getCommentMentions();
+
     }
 }
