@@ -11,6 +11,7 @@ use App\Services\BitbucketServer\BitbucketServerApi;
 use App\Services\Bamboo\BambooApi;
 use App\Services\Jira\JiraApi;
 use App\Models\Command;
+use App\Models\MonitorCommand;
 use Log;
 
 class BuildCommand implements ShouldQueue
@@ -87,13 +88,26 @@ class BuildCommand implements ShouldQueue
         if($foundBranches->size >= 1){
             $this->log("Plan branch exists. Triggering the build.");
 
-            $bambooApi->triggerPlanBuild($foundBranches->searchResults[0]->id, $this->flag == 'skip-tests');
+            $result = $bambooApi->triggerPlanBuild($foundBranches->searchResults[0]->id, $this->flag == 'skip-tests');
             $jiraApi->leaveComment($this->jira_issue_key, "Woof. I have triggered the build job.");
+            $this->monitorBuildJob($result->buildResultKey);
             return;
         }
 
-        if($bambooApi->createPlanBranch($this->bamboo_key, $branch_name))
+        if($result = $bambooApi->createPlanBranch($this->bamboo_key, $branch_name)){
             $jiraApi->leaveComment($this->jira_issue_key, "Woof. I have triggered the build job.");
+            $this->monitorBuildJob($result->key);
+        }
+    }
+
+    /**
+     * Insert db record
+     */
+    public function monitorBuildJob($bamboo_build_key){
+        MonitorCommand::create([
+            'command_id' => $this->command_id,
+            'bamboo_build_key' => $bamboo_build_key,
+        ]);
     }
 
     /**
