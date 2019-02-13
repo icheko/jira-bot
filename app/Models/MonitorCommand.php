@@ -17,4 +17,8 @@ class MonitorCommand extends Model
     protected $fillable = [
         'command_id', 'bamboo_build_key','complete',
     ];
+
+    public function command(){
+        return $this->belongsTo(Command::class);
+    }
 }

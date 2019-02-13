@@ -17,9 +17,11 @@ class CreateMonitorCommandsTable extends Migration
             $table->uuid('id');
             $table->uuid('command_id');
             $table->string('bamboo_build_key');
+            $table->tinyInteger('retries')->default(30);
             $table->boolean('complete')->default(false);
             $table->timestamps();
             $table->primary('id');
+            $table->foreign('command_id')->references('id')->on('commands');
         });
     }
 

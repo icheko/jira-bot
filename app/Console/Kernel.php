@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\ProcessMonitorCommands;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Jobs\ProcessCommentMentions;
@@ -27,6 +28,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {\Log::info('cron: hello world');})->everyMinute();
         $schedule->job(new ProcessCommentMentions)->everyMinute();
+        $schedule->job(new ProcessMonitorCommands)->everyMinute();
     }
 
     /**

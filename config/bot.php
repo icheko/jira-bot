@@ -26,7 +26,8 @@ return [
     |
     */
     'bamboo' => [
-        'api_baseurl' => env('BOT_BAMBOO_API_BASEURL', 'http://beaver.server:8085/rest/api/latest/'),
+        'base_url' => env('BOT_BAMBOO_BASEURL', 'http://bamboo.server:8085/'),
+        'api_baseurl' => env('BOT_BAMBOO_API_BASEURL', 'http://bamboo.server:8085/rest/api/latest/'),
         'auth_username' => env('BOT_BAMBOO_AUTH_USERNAME', 'woof'),
         'auth_password' => env('BOT_BAMBOO_AUTH_PASSWORD', 'woof'),
         'username' => env('BOT_BAMBOO_USERNAME', 'woof'),

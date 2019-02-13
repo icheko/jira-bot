@@ -111,6 +111,36 @@ class BambooApi
     }
 
     /**
+     * Check the status of a particular build
+     * @param $build_key
+     *
+     * @return object
+     * @throws \Exception
+     */
+    public function checkStatus($build_key){
+        $response = null;
+
+        try{
+            $response = $this->client->request('GET', "result/${build_key}");
+        } catch(\Exception $e){
+            $this->client->error(get_class($this), $e->getMessage());
+            throw $e;
+        }
+
+        return json_decode($response->getBody()->getContents());
+    }
+
+    /**
+     * Generate a link to the build result
+     * @param $build_key
+     *
+     * @return string
+     */
+    public function getBrowseBuildLink($build_key){
+        return config('bot.bamboo.base_url')."browse/{$build_key}";
+    }
+
+    /**
      * @param $text
      */
     private function log($text){
