@@ -17,4 +17,8 @@ class Comment extends Model
     protected $fillable = [
         'issue_id', 'jira_comment_id', 'body',
     ];
+
+    public function issue(){
+        return $this->belongsTo(Issue::class);
+    }
 }

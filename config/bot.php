@@ -26,9 +26,24 @@ return [
     |
     */
     'bamboo' => [
-        'api_baseurl' => env('BOT_BAMBOO_API_BASEURL', 'http://beaver.server:8085/rest/api/'),
+        'api_baseurl' => env('BOT_BAMBOO_API_BASEURL', 'http://beaver.server:8085/rest/api/latest/'),
         'auth_username' => env('BOT_BAMBOO_AUTH_USERNAME', 'woof'),
         'auth_password' => env('BOT_BAMBOO_AUTH_PASSWORD', 'woof'),
         'username' => env('BOT_BAMBOO_USERNAME', 'woof'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | BitbucketServer API Settings
+    |--------------------------------------------------------------------------
+    |
+    | Bot uses the Bitbucket Rest API to get branches and manage source code operations
+    |
+    */
+    'bitbucket-server' => [
+        'api_baseurl' => env('BOT_BITBUCKET_SERVER_API_BASEURL', 'http://bitbucket.server:7990/rest/api/1.0/'),
+        'auth_username' => env('BOT_BITBUCKET_SERVER_AUTH_USERNAME', 'woof'),
+        'auth_password' => env('BOT_BITBUCKET_SERVER_AUTH_PASSWORD', 'woof'),
+        'username' => env('BOT_BITBUCKET_SERVER_USERNAME', 'woof'),
     ],
 ];

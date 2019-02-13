@@ -76,7 +76,7 @@ class ProcessCommentMentions implements ShouldQueue
                 $arguments = $parsed_commands[2];
                 $matched_commands = $this->matchCommands($commands, $command_types);
                 $this->insertCommands($comment->id, $matched_commands, $arguments);
-                // mark comment
+                // mark processed
                 $comment->processed = true;
                 $comment->save();
             }
@@ -90,7 +90,20 @@ class ProcessCommentMentions implements ShouldQueue
         Command::where('processed', 'false')->chunkById(50, function($commands) {
 
             foreach ($commands as $command) {
-                echo $command_name = $command->commandType->command_name;
+                $command_name = $command->commandType->command_name;
+                $command_name = preg_replace("/[^A-Za-z]/", '', $command_name);
+                $command_class = "App\\Jobs\\".ucfirst($command_name)."Command";
+
+                if(!class_exists($command_class)){
+                    throw new \Exception("Command [{$command_name}] is not supported.");
+                }
+
+                $command_class::dispatch($command->arguments, $command->comment->issue->jira_key);
+
+                // mark processed
+                $command->processed = true;
+                $command->save();
+                //call_user_func($command_class.'::dispatch', [$command->arguments]);
             }
 
         });

@@ -21,4 +21,8 @@ class Command extends Model
     public function commandType(){
         return $this->belongsTo(CommandType::class);
     }
+
+    public function comment(){
+        return $this->belongsTo(Comment::class);
+    }
 }
