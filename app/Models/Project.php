@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Uuids;
 
-class Issue extends Model
+class Project extends Model
 {
     use Uuids;
 
@@ -15,10 +15,6 @@ class Issue extends Model
      * @var array
      */
     protected $fillable = [
-        'jira_id', 'jira_key', 'project_id'
+        '',
     ];
-
-    public function comments(){
-        return $this->hasMany(Comment::class);
-    }
 }

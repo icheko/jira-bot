@@ -12,6 +12,9 @@ use App\Models\Issue;
 use App\Models\Comment;
 use App\Models\CommandType;
 use App\Models\Command;
+use App\Models\Project;
+use Log;
+use Exception;
 
 class ProcessCommentMentions implements ShouldQueue
 {
@@ -53,8 +56,8 @@ class ProcessCommentMentions implements ShouldQueue
         $results = $this->api->getCommentMentions();
 
         foreach ($results->issues as $issue){
-
-            $issueModel = $this->insertIssue($issue);
+            $project_id = $this->findProjectId($issue->key);
+            $issueModel = $this->insertIssue($issue, $project_id);
             $this->insertComments($issue->fields->comment->comments, $issueModel->id);
 
         }
@@ -95,7 +98,7 @@ class ProcessCommentMentions implements ShouldQueue
                 $command_class = "App\\Jobs\\".ucfirst($command_name)."Command";
 
                 if(!class_exists($command_class)){
-                    throw new \Exception("Command [{$command_name}] is not supported.");
+                    throw new Exception("Command [{$command_name}] is not supported.");
                 }
 
                 $command_class::dispatch($command->id, $command->arguments, $command->comment->issue->jira_key);
@@ -110,14 +113,32 @@ class ProcessCommentMentions implements ShouldQueue
     }
 
     /**
+     * @param $issue_key
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    public function findProjectId($issue_key){
+        $jira_key = explode('-', $issue_key);
+        $jira_key = $jira_key[0];
+
+        $project = Project::where('jira_key', $jira_key)->first();
+        if(!$project)
+            return Project::where('jira_key', 'UNK')->firstOrFail()->id;
+
+        return $project->id;
+    }
+
+    /**
      * @param $issue
      *
      * @return mixed
      */
-    public function insertIssue($issue){
+    public function insertIssue($issue, $project_id){
         return Issue::updateOrCreate([
                      'jira_id' => $issue->id,
-                     'jira_key' => $issue->key
+                     'jira_key' => $issue->key,
+                     'project_id' => $project_id,
                  ]);
     }
 
@@ -172,5 +193,19 @@ class ProcessCommentMentions implements ShouldQueue
         $parsed_cmds = collect($parsed_cmds);
         $intersect = $parsed_cmds->intersect($command_types);
         return $intersect->toArray();
+    }
+
+    /**
+     * @param $text
+     */
+    private function log($text){
+        Log::info("{$text}");
+    }
+
+    /**
+     * @param $text
+     */
+    private function error($text){
+        Log::error("{$text}");
     }
 }
